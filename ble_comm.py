@@ -1,7 +1,8 @@
-import pc  #constants related to the central Linux pc
+from bluetooth.ble import DiscoveryService, GATTRequester
+
 import arduino  # constants related to the Arduino 101 boards
 import ble_commands  # hex values of constant BLE commands
-from bluetooth.ble import DiscoveryService, GATTRequester
+import pc  # constants related to the central Linux pc
 
 
 class IoTDevice(object):
@@ -66,11 +67,11 @@ if __name__ == '__main__':
     for address in authorized_devices:  # for each valid EyeoT device
         eyeot_devices.append(IoTDevice(address))  # initialize an IoTDevice object representing its state
 
-    # TODO implement EYEOT functionality to determine which device to control, assume first device selected
+    # TODO implement Pupil functionality to determine which device to control, assume first device selected
 
     eyeot_devices[0].connect()  # connect to device
 
-    # TODO read current state, check that it can be written to
+    # TODO consider a second characteristic for Tx/Rx, or interrupt callback functions
     eyeot_devices[0].receive()  # read current state
     eyeot_devices[0].send(ble_commands.red_light)
     eyeot_devices[0].receive()  # read current state
