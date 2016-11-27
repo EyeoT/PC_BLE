@@ -19,12 +19,13 @@ class IoTDevice(object):
 
     def __init__(self, address):
         self.address = address
-        self.uuid = arduino.uuid
+        self.service_uuid = arduino.service_uuid
         self.tx_command = arduino.tx_command
         self.rx_response = arduino.rx_response
         self.tx_handle = arduino.tx_handle
+        self.rx_handle = arduino
         self.req = GATTRequester(address, False)  # initialize req but don't connect
-        self.response = ble_consts.not_ready  # initialize to not ready
+        self.response = ble_consts.not_ready
 
     def connect(self):
         print("Connecting...\n")
@@ -32,12 +33,12 @@ class IoTDevice(object):
         print("Connection Successful! \n")
 
     def send_command(self, command):
-        self.req.write_by_handle(arduino.tx_handle, chr(command))
+        self.req.write_by_handle(arduino.tx_handle, command)
         print("Sent '{0}' command\n".format(ble_consts.commands[command]))
 
     def receive_response(self):
-        self.response = int(self.req.read_by_uuid(arduino.rx_response)[0].encode('hex'), 16)
-        print("Response '{0}' received!\n".format(ble_consts.commands[self.response]))
+        self.response = int(self.req.read_by_handle(arduino.rx_handle)[0].encode('hex')) / 100
+        print("Response '{0}' received!\n".format(ble_consts.responses[self.response]))
 
 
 def search_for_authorized_eyeot_devices():
@@ -76,7 +77,7 @@ if __name__ == '__main__':
 
     eyeot_devices[0].connect()  # connect to device
 
-    while eyeot_devices[0].response() != ble_consts.ready:  # wait until device is ready
+    while eyeot_devices[0].response != ble_consts.ready:  # wait until device is ready
         eyeot_devices[0].receive_response()
 
     # TODO: implement Pupil functionality to determine which command to send
